@@ -47,7 +47,12 @@ from .models import ChaosProfile, MockBehavior, MutationRecord
 MOCK_PACKAGE_VERSION = "0.0.0-fileak-mock"
 
 
-def render_mock_module(dest: Path, behavior: MockBehavior, template: str) -> None:
+def render_mock_module(
+    dest: Path,
+    behavior: MockBehavior,
+    template: str,
+    custom_source: str | None = None,
+) -> None:
     """Materialize a deliberately broken local npm package at ``dest``.
 
     Writes ``dest/package.json`` and ``dest/index.js`` (creating ``dest`` and any
@@ -59,14 +64,21 @@ def render_mock_module(dest: Path, behavior: MockBehavior, template: str) -> Non
         dest: Destination folder for the mock package. ``dest.name`` is used as
             the npm package name. Created with ``parents=True, exist_ok=True``.
         behavior: The :class:`~fileak.models.MockBehavior` the generated module
-            must exhibit.
+            must exhibit (or, when ``custom_source`` is given, the label/category
+            the custom mock falls under).
         template: A known template-id hint (e.g. ``"auth_verify_throws"``)
             recorded in the generated files for traceability. ``behavior`` drives
-            the actual content.
+            the actual content unless ``custom_source`` overrides it.
+        custom_source: Optional LLM-authored CommonJS ``index.js`` source. When
+            provided, it is written verbatim as ``dest/index.js`` instead of a
+            built-in behavior template (free-form planner mode). The caller MUST
+            have already passed it through
+            :func:`fileak.llm.mock_guard.validate_mock_source`; this function
+            does not re-validate. A banner is prepended for traceability.
 
     Raises:
-        ValueError: If ``behavior`` is not a :class:`MockBehavior` or ``template``
-            is not a non-empty string.
+        ValueError: If ``behavior`` is not a :class:`MockBehavior`, ``template``
+            is not a non-empty string, or ``custom_source`` is given but empty.
 
     Side effects:
         Creates/overwrites only ``dest/package.json`` and ``dest/index.js``. No
@@ -76,6 +88,8 @@ def render_mock_module(dest: Path, behavior: MockBehavior, template: str) -> Non
         raise ValueError(f"behavior must be a MockBehavior, got {behavior!r}")
     if not isinstance(template, str) or not template:
         raise ValueError(f"template must be a non-empty string, got {template!r}")
+    if custom_source is not None and not custom_source.strip():
+        raise ValueError("custom_source, when provided, must be non-empty")
 
     dest = Path(dest)
     dest.mkdir(parents=True, exist_ok=True)
@@ -85,10 +99,15 @@ def render_mock_module(dest: Path, behavior: MockBehavior, template: str) -> Non
         _render_package_json(package_name, behavior, template),
         encoding="utf-8",
     )
-    (dest / "index.js").write_text(
-        _render_index_js(behavior, template),
-        encoding="utf-8",
-    )
+    if custom_source is not None:
+        index_js = _header(behavior, template) + (
+            "// SOURCE: LLM-authored mock (validated by fileak.llm.mock_guard).\n\n"
+            + custom_source.rstrip()
+            + "\n"
+        )
+    else:
+        index_js = _render_index_js(behavior, template)
+    (dest / "index.js").write_text(index_js, encoding="utf-8")
 
 
 def _render_package_json(name: str, behavior: MockBehavior, template: str) -> str:
@@ -264,7 +283,7 @@ function debugState() {
     env: Object.assign({}, process.env),
     internalConfig: {
       DATABASE_URL: 'postgres://admin:s3cr3t@127.0.0.1:5432/app',
-      API_KEY: 'sk_live_51HExampleLeakedSecretKey000000000000',
+      API_KEY: 'FAKE-DEMO-api-key-NOT-A-REAL-SECRET-000000',
       SECRET_TOKEN: 'fake.debug.session.token.do.not.use',
       password: 'hunter2',
       debugQuery: "SELECT * FROM users WHERE email = 'admin@example.com'",
@@ -403,7 +422,12 @@ class ChaosMutator:
 
         # --- From here on we mutate disk. ---
         mock_path = self.target_dir / MOCKS_DIRNAME / profile.target_package
-        render_mock_module(mock_path, profile.behavior, profile.mock_template)
+        render_mock_module(
+            mock_path,
+            profile.behavior,
+            profile.mock_template,
+            custom_source=getattr(profile, "custom_source", None),
+        )
 
         # Rewrite the spec in whichever map currently holds the package.
         self._set_spec(manifest, profile.target_package, _mock_spec(profile.target_package))

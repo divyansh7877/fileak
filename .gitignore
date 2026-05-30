@@ -1,49 +1,32 @@
-# Python
+# --- secrets (never commit) ---
+.env
+.env.*
+!.env.example
+
+# --- python ---
 __pycache__/
 *.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
+.pytest_cache/
 *.egg-info/
-.installed.cfg
-*.egg
-
-# Virtual environments
 .venv/
 venv/
-env/
-ENV/
 
-# Testing / coverage
-.pytest_cache/
-.hypothesis/
-.coverage
-.coverage.*
-htmlcov/
-.tox/
-.cache/
-
-# Tool output
+# --- fileak generated outputs ---
+examples/.chaos_output/
 fileak_output/
-.testmuai/
+**/.fileak_mocks/
+**/.fileak_plans/
+dashboard/data.js
+dashboard/data.json
 
-# IDE / editor
-.idea/
-*.swp
-.DS_Store
+# --- python test / tooling caches ---
+.hypothesis/
+.vscode/
 
-# Environment / secrets
-.env
-*.local
+# --- node (target apps) ---
+node_modules/
+
+# --- kane local artifacts ---
+# Generated Kane test markdown + their output dirs are run artifacts, not source.
+.testmuai/tests/*_test.md
+.testmuai/tests/output-*/

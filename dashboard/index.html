@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>fileak · fault-injection console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Syne:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="scanlines" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="masthead">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">◈</span>
+        <div class="brand-text">
+          <h1>fi<span>leak</span></h1>
+          <p class="tagline">dependency fault-injection &amp; leak-detection console</p>
+        </div>
+      </div>
+      <div class="status-cluster" id="status-cluster">
+        <!-- verdict chip injected by app.js -->
+      </div>
+      <div class="live-indicator" id="live-indicator" hidden title="auto-refreshing from data.json">
+        <span class="live-dot" id="live-dot"></span>live
+      </div>
+    </header>
+
+    <main>
+      <!-- ===== Experiment verdict band ===== -->
+      <section class="band" id="verdict-band" aria-label="Run verdict">
+        <div class="band-grid" id="metric-grid"><!-- metrics injected --></div>
+      </section>
+
+      <!-- ===== Pipeline flow ===== -->
+      <section class="flow" id="flow" aria-label="Pipeline flow">
+        <div class="flow-track" id="flow-track"><!-- stages injected --></div>
+      </section>
+
+      <!-- ===== LLM planner banner (only when an LLM plan is present) ===== -->
+      <section class="planner" id="planner-banner" hidden aria-label="LLM plan">
+        <div class="planner-tag">◇ llm-planned</div>
+        <p class="planner-summary" id="planner-summary"></p>
+        <div class="planner-meta" id="planner-meta"></div>
+      </section>
+
+      <!-- ===== Chaos experiments ===== -->
+      <section class="panel" aria-labelledby="exp-title">
+        <div class="panel-head">
+          <h2 id="exp-title"><span class="idx">01</span> chaos experiments</h2>
+          <p class="panel-sub">
+            each profile swaps one real dependency for a deliberately broken mock,
+            boots the app, and inverts the agent's judgement into a security verdict
+          </p>
+        </div>
+        <div class="experiments" id="experiments"><!-- profiles injected --></div>
+        <div class="dropped" id="dropped"><!-- dropped experiments injected --></div>
+      </section>
+
+      <!-- ===== Findings ledger ===== -->
+      <section class="panel" aria-labelledby="find-title">
+        <div class="panel-head">
+          <h2 id="find-title"><span class="idx">02</span> findings ledger</h2>
+          <p class="panel-sub">
+            one finding per (profile × assertion) pair — click a row to inspect evidence
+          </p>
+        </div>
+        <div class="ledger" id="ledger"><!-- findings injected --></div>
+      </section>
+
+      <!-- ===== Remediation (only when fix suggestions are present) ===== -->
+      <section class="panel" id="remediation-panel" hidden aria-labelledby="fix-title">
+        <div class="panel-head">
+          <h2 id="fix-title"><span class="idx">03</span> remediation advisor</h2>
+          <p class="panel-sub">
+            LLM-proposed fixes for each detected leak — advisory only, no files are changed
+          </p>
+        </div>
+        <div class="fixes" id="fixes"><!-- fix suggestions injected --></div>
+      </section>
+
+      <!-- ===== LLM prompts panel ===== -->
+      <section class="panel" id="prompts-panel" hidden aria-labelledby="prompt-title">
+        <div class="panel-head">
+          <h2 id="prompt-title"><span class="idx">04</span> llm prompts</h2>
+          <p class="panel-sub">
+            the exact system + user prompts sent to the model to plan the chaos and advise fixes
+          </p>
+        </div>
+        <div class="tabs" id="prompt-tabs"><!-- prompt tabs injected --></div>
+        <div class="prompt-view" id="prompt-view"><!-- prompt content injected --></div>
+      </section>
+
+      <!-- ===== Raw artifacts viewer ===== -->
+      <section class="panel" id="artifacts-panel" hidden aria-labelledby="art-title">
+        <div class="panel-head">
+          <h2 id="art-title"><span class="idx" id="art-idx">04</span> artifacts &amp; flow</h2>
+          <p class="panel-sub">
+            the actual reports, plan, and advice JSON/markdown driving this run — click a tab to inspect
+          </p>
+        </div>
+        <div class="tabs" id="artifact-tabs"><!-- tabs injected --></div>
+        <pre class="artifact-view" id="artifact-view"><!-- content injected --></pre>
+      </section>
+
+      <!-- ===== Test suite ===== -->
+      <section class="panel" aria-labelledby="test-title">
+        <div class="panel-head">
+          <h2 id="test-title"><span class="idx" id="test-idx">03</span> correctness suite</h2>
+          <p class="panel-sub">
+            property-based &amp; unit tests guarding the eight design invariants
+          </p>
+        </div>
+        <div class="test-summary" id="test-summary"><!-- test bars injected --></div>
+        <div class="test-files" id="test-files"><!-- per-file injected --></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span id="generated-stamp">—</span>
+      <span class="footer-note">local-only · evidence truncated · target always restored to baseline</span>
+    </footer>
+
+    <!-- evidence drawer -->
+    <div class="drawer-scrim" id="drawer-scrim" hidden></div>
+    <aside class="drawer" id="drawer" hidden aria-label="Evidence detail">
+      <button class="drawer-close" id="drawer-close" aria-label="Close">✕</button>
+      <div id="drawer-body"></div>
+    </aside>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "vulnerable-shop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Deliberately leak-prone sandbox target app for the fileak fault-injection engine. DO NOT deploy.",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "uuid": "file:./.fileak_mocks/uuid",
+    "validator": "^13.11.0"
+  }
+}

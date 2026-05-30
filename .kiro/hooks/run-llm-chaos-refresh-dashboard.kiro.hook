@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Run LLM chaos + refresh dashboard",
+  "description": "Runs the full LLM-driven chaos pipeline against examples/vulnerable-shop using the REAL kane-cli agent: Claude plans the chaos, the engine injects + boots + judges with Kane, Claude advises fixes, then the dashboard data is regenerated. Requires kane-cli logged in, local Chrome, and ANTHROPIC_API_KEY in .env. Takes ~10-15 min and consumes Kane credits. For a fast, free offline run instead, add --fake-kane to the command.",
+  "version": "1",
+  "when": {
+    "type": "userTriggered"
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "python examples/run_llm_chaos.py --target examples/vulnerable-shop --port 3000 --count 5 --allow-custom-code && python dashboard/generate_data.py",
+    "timeout": 0
+  }
+}

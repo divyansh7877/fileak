@@ -40,6 +40,16 @@ class ChaosProfile:
     behavior: MockBehavior
     mock_template: str        # template id used to render the mock module
     description: str
+    # Optional LLM-authored mock module source (CommonJS index.js). When set
+    # (free-form planner mode), the ChaosMutator writes THIS validated source as
+    # the mock's index.js instead of rendering a built-in MockBehavior template;
+    # ``behavior`` then serves only as a label/category for reporting. Must have
+    # passed fileak.llm.mock_guard.validate_mock_source before reaching inject.
+    # Default None preserves the built-in template path (backward compatible).
+    custom_source: str | None = None
+    # Free-text rationale from the planner explaining why this experiment was
+    # proposed (surfaced in the dashboard; never affects execution).
+    rationale: str = ""
 
 
 @dataclass
