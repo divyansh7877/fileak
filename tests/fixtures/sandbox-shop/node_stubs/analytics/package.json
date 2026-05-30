@@ -1,0 +1,7 @@
+{
+  "name": "analytics",
+  "version": "0.8.1",
+  "private": true,
+  "main": "index.js",
+  "description": "Vendored stub of analytics for the fileak sandbox fixture."
+}

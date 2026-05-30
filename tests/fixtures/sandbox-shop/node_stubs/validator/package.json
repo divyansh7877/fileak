@@ -1,0 +1,7 @@
+{
+  "name": "validator",
+  "version": "13.11.0",
+  "private": true,
+  "main": "index.js",
+  "description": "Vendored stub of validator for the fileak sandbox fixture."
+}

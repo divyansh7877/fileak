@@ -1,0 +1,14 @@
+{
+  "name": "sandbox-shop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tiny sandbox target app for the fileak fault-injection engine.",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "next-auth": "^4.24.5",
+    "analytics": "^0.8.1",
+    "validator": "^13.11.0"
+  }
+}

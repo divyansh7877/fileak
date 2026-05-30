@@ -1,0 +1,7 @@
+{
+  "name": "next-auth",
+  "version": "4.24.5",
+  "private": true,
+  "main": "index.js",
+  "description": "Vendored stub of next-auth for the fileak sandbox fixture."
+}
